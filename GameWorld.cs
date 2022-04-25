@@ -61,7 +61,7 @@ namespace DatabaseProjekt
 
         public void LoadDb()
         {
-
+            //TODO skriv alt data ind i scriptet manuelt så den kan oprette det hele selv
             if (File.Exists("FishingFrenzy.db") == false)
             {
                 string sqlConnectionString = "Data Source=FishingFrenzy.db; new=True";
