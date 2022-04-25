@@ -1,0 +1,16 @@
+CREATE TABLE userslots (Id integer primary key, Score int);
+CREATE TABLE highscore (Id integer primary key, Score);
+CREATE TABLE seafish (Id integer primary key, Species string, Depth int, Weight REAL, Texture string);
+CREATE TABLE riverfish (Id integer primary key, Species string, Depth int, Weight REAL, Texture string);
+CREATE TABLE fjordfish (Id integer primary key, Species string, Depth int, Weight REAL, Texture string);
+CREATE VIEW "View fjordfish" AS Select * from fjordfish;
+CREATE VIEW "View seafish" AS select * from seafish;
+CREATE VIEW "view riverfish" AS select * from riverfish;
+CREATE TABLE sea (Id integer primary key, Species string, Depth int, Weight REAL);
+CREATE VIEW "view sea" AS select * from sea;
+CREATE TABLE river (Id integer primary key, Species string, Depth int, Weight REAL);
+CREATE TABLE fjord (Id integer primary key, Species string, Depth int, Weight REAL);
+CREATE VIEW "view river" AS Select * from river;
+CREATE VIEW "view fjord" AS Select * from fjord;
+CREATE TABLE rods (Id integer primary key, Type string);
+CREATE TABLE halloffish (Id integer primary key, UserId int, Species string, Weight REAL);
