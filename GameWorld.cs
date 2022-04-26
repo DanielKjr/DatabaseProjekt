@@ -151,7 +151,7 @@ namespace DatabaseProjekt
                 gameObjects[i].Draw(_spriteBatch);
             }
 
-            
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
