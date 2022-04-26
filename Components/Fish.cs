@@ -24,6 +24,8 @@ namespace DatabaseProjekt
 
         public FishType MyFishType { get => myFishType; set => myFishType = value; }
 
+
+      
         public override void Start()
         {
 
