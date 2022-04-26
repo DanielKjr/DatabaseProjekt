@@ -12,6 +12,7 @@ namespace DatabaseProjekt
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private FishFactory _fishFactory;
 
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<GameObject> newGameObjects = new List<GameObject>();
@@ -42,20 +43,17 @@ namespace DatabaseProjekt
 
         protected override void Initialize()
         {
-            GameObject player = new GameObject();
-            player.AddComponent(new Player());
-            player.AddComponent(new SpriteRenderer());
+            //skal flyttes ind i userinterface
+            GameObject player = PlayerFactory.Instance.CreateObject();
             gameObjects.Add(player);
 
-            //eksempel på fiske oprettelse
-            //GameObject fish = new GameObject();
-            //fish.AddComponent(new Fish());
-            //fish.AddComponent(new SpriteRenderer());
-            //Fish f = fish.GetComponent<Fish>() as Fish;
-            //f.MyFishType = FishType.fjordfish;
-            //fish.Tag = "Salmon";
-            //fish.Transform.Position = new Vector2(100, 100);
-            //gameObjects.Add(fish);
+            //eksempel på fiske instantiering
+            GameObject fish = FishFactory.Instance.CreateObject();
+            Fish f = fish.GetComponent<Fish>() as Fish;
+            f.MyFishType = FishType.fjordfish;
+            f.GameObject.Tag = "Salmon";
+            gameObjects.Add(fish);
+
 
             
 
