@@ -114,6 +114,7 @@ namespace DatabaseProjekt
         }
         public void Draw(SpriteBatch spriteBatch)
         {
+           
             spriteBatch.Draw(sprite, new Vector2(0, 0), Color.White);
         }
     }

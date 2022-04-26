@@ -55,6 +55,12 @@ namespace DatabaseProjekt
 
         protected override void Initialize()
         {
+            GameState = GameState.SaveSelect;
+            UserInterface.Instance.Start();
+            _graphics.PreferredBackBufferHeight = 800;
+            _graphics.PreferredBackBufferWidth = 1080;
+            _graphics.ApplyChanges();
+
             //skal flyttes ind i userinterface
             GameObject player = PlayerFactory.Instance.CreateObject();
 
