@@ -2,6 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.IO;
+using System.Data.SQLite;
+
 
 namespace DatabaseProjekt
 {
@@ -44,6 +47,9 @@ namespace DatabaseProjekt
             player.AddComponent(new SpriteRenderer());
             gameObjects.Add(player);
 
+            CreateDb();
+
+
 
             for (int i = 0; i < gameObjects.Count; i++)
             {
@@ -51,6 +57,25 @@ namespace DatabaseProjekt
             }
 
             base.Initialize();
+        }
+
+        public void CreateDb()
+        {
+            
+            if (File.Exists("FishingFrenzy.db") == false)
+            {
+                string sqlConnectionString = "Data Source=FishingFrenzy.db; new=True";
+                var sqlconnection = new SQLiteConnection(sqlConnectionString);
+                sqlconnection.Open();
+                string cmd = File.ReadAllText("CreateFishingFrenzyDb.sql");
+                var SqliteDb = new SQLiteCommand(cmd, sqlconnection);
+                SqliteDb.ExecuteNonQuery();
+                sqlconnection.Close();
+
+            }
+
+           
+
         }
 
         protected override void LoadContent()
