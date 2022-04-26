@@ -6,8 +6,10 @@ namespace DatabaseProjekt
     {
         private float speed;
         private bool canShoot = true;
-
+        private int userID;
         private Animator animator;
+
+        public int UserID { get => userID; set => userID = value; }
 
         public void Move(Vector2 _velocity)
         {
