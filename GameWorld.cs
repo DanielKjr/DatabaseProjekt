@@ -8,15 +8,24 @@ using System.Data.SQLite;
 
 namespace DatabaseProjekt
 {
+    public enum GameState
+    {
+        SaveSelect,
+        TitleScreen,
+        ViewScores,
+        Playing,
+        End
+    }
     public class GameWorld : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
+        
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<GameObject> newGameObjects = new List<GameObject>();
         private List<GameObject> destroyedGameObjects = new List<GameObject>();
-
+        private GameState _gameState;
+        public GameState GameState { get => _gameState; set => _gameState = value; }
         public GraphicsDeviceManager Graphics { get => _graphics; }
 
         public static float DeltaTime;
@@ -33,6 +42,9 @@ namespace DatabaseProjekt
             }
 
         }
+
+        
+
         private GameWorld()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -42,6 +54,11 @@ namespace DatabaseProjekt
 
         protected override void Initialize()
         {
+            _graphics.PreferredBackBufferWidth = 1080;
+            _graphics.PreferredBackBufferHeight = 800;
+            _graphics.ApplyChanges();
+            GameState = GameState.SaveSelect;
+            UserInterface.Instance.Start();
             GameObject player = new GameObject();
             player.AddComponent(new Player());
             player.AddComponent(new SpriteRenderer());
@@ -104,16 +121,20 @@ namespace DatabaseProjekt
 
         protected override void Update(GameTime gameTime)
         {
+            UserInterface.Instance.Update(gameTime);
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            base.Update(gameTime);
+            
+            
             DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             for (int i = 0; i < gameObjects.Count; i++)
             {
                 gameObjects[i].Update(gameTime);
             }
-
-            base.Update(gameTime);
+            
+            
             //adds and removes new objects
             CleanUp();
         }
@@ -124,13 +145,13 @@ namespace DatabaseProjekt
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-
+            UserInterface.Instance.Draw(_spriteBatch);
             for (int i = 0; i < gameObjects.Count; i++)
             {
                 gameObjects[i].Draw(_spriteBatch);
             }
 
-
+            
             _spriteBatch.End();
 
             base.Draw(gameTime);
