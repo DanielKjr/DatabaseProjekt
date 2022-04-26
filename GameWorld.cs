@@ -8,16 +8,25 @@ using System.Data.SQLite;
 
 namespace DatabaseProjekt
 {
+    public enum GameState
+    {
+        SaveSelect,
+        TitleScreen,
+        ViewScores,
+        Playing,
+        End
+    }
     public class GameWorld : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private FishFactory _fishFactory;
 
+        
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<GameObject> newGameObjects = new List<GameObject>();
         private List<GameObject> destroyedGameObjects = new List<GameObject>();
-
+        private GameState _gameState;
+        public GameState GameState { get => _gameState; set => _gameState = value; }
         public GraphicsDeviceManager Graphics { get => _graphics; }
 
         public static float DeltaTime;
@@ -34,6 +43,9 @@ namespace DatabaseProjekt
             }
 
         }
+
+        
+
         private GameWorld()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -45,6 +57,7 @@ namespace DatabaseProjekt
         {
             //skal flyttes ind i userinterface
             GameObject player = PlayerFactory.Instance.CreateObject();
+
             gameObjects.Add(player);
 
             //eksempel på fiske instantiering
@@ -102,16 +115,20 @@ namespace DatabaseProjekt
 
         protected override void Update(GameTime gameTime)
         {
+            UserInterface.Instance.Update(gameTime);
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            base.Update(gameTime);
+            
+            
             DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             for (int i = 0; i < gameObjects.Count; i++)
             {
                 gameObjects[i].Update(gameTime);
             }
-
-            base.Update(gameTime);
+            
+            
             //adds and removes new objects
             CleanUp();
         }
@@ -122,13 +139,13 @@ namespace DatabaseProjekt
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-
+            UserInterface.Instance.Draw(_spriteBatch);
             for (int i = 0; i < gameObjects.Count; i++)
             {
                 gameObjects[i].Draw(_spriteBatch);
             }
 
-
+            
             _spriteBatch.End();
 
             base.Draw(gameTime);
