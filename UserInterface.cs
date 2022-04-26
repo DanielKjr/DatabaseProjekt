@@ -10,12 +10,13 @@ namespace DatabaseProjekt
 {
     public class UserInterface
     {
-        SpriteFont spriteFont;
-        Texture2D[] sprites = new Texture2D[4];
-        Rectangle titleOption1 = new Rectangle();        
-        Texture2D sprite;
-        MouseState mState;
-        
+        private SpriteFont saveSelectFont;
+        private SpriteFont titleScreenFont;
+        private Texture2D[] sprites = new Texture2D[4];
+        private Texture2D sprite;
+        private MouseState mState;
+        private bool mLeftReleased = true;
+
         private static UserInterface instance;
         public static UserInterface Instance
         {
@@ -27,7 +28,7 @@ namespace DatabaseProjekt
                 }
                 return instance;
             }
-                       
+
         }
         private UserInterface()
         {
@@ -43,7 +44,8 @@ namespace DatabaseProjekt
 
 
 
-            spriteFont = GameWorld.Instance.Content.Load<SpriteFont>("spriteFont");
+            saveSelectFont = GameWorld.Instance.Content.Load<SpriteFont>("saveSelectFont");
+            titleScreenFont = GameWorld.Instance.Content.Load<SpriteFont>("titleScreenFont");
         }
         public void Update(GameTime gameTime)
         {
@@ -71,12 +73,13 @@ namespace DatabaseProjekt
         {
             sprite = sprites[0];
 
-            if (mState.LeftButton == ButtonState.Pressed && mState.LeftButton != ButtonState.Released)
+            if (mState.LeftButton == ButtonState.Pressed && mLeftReleased == true)
             {
+                mLeftReleased = false;
                 if (mState.Position.X < 375 && mState.Position.X > 64 && mState.Position.Y < 295 && mState.Position.Y > 50)
                 {
                     GameWorld.Instance.GameState = GameState.TitleScreen;
-                    
+
                 }
                 if (mState.Position.X < 1000 && mState.Position.X > 666 && mState.Position.Y < 295 && mState.Position.Y > 50)
                 {
@@ -91,13 +94,35 @@ namespace DatabaseProjekt
                     GameWorld.Instance.GameState = GameState.TitleScreen;
 
                 }
-                
+    
+            }
+            if (mState.LeftButton == ButtonState.Released)
+            {
+                mLeftReleased = true;
             }
         }
         public void TitleScreen()
         {
             sprite = sprites[1];
-            
+            if (mState.LeftButton == ButtonState.Pressed && mLeftReleased == true)
+            {
+                mLeftReleased = false;
+                if (mState.Position.X < 375 && mState.Position.X > 64 && mState.Position.Y < 690 && mState.Position.Y > 630)
+                {
+                    GameWorld.Instance.GameState = GameState.SaveSelect;
+
+                }
+                if (mState.Position.X < 200 && mState.Position.X > 10 && mState.Position.Y < 120 && mState.Position.Y > 50)
+                {
+                    GameWorld.Instance.GameState = GameState.SaveSelect;
+                }
+
+                
+            }
+            if (mState.LeftButton == ButtonState.Released)
+            {
+                mLeftReleased = true;
+            }
 
         }
         public void ViewScores()
@@ -115,6 +140,13 @@ namespace DatabaseProjekt
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(sprite, new Vector2(0, 0), Color.White);
+            switch (GameWorld.Instance.GameState)
+            {
+                case GameState.TitleScreen:
+                    spriteBatch.DrawString(titleScreenFont, "Play", new Vector2(15, 630), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, "HighScore", new Vector2(15, 700), Color.White);
+                    break;
+            }
         }
     }
 }
