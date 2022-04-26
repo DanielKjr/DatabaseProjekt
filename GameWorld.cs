@@ -47,6 +47,18 @@ namespace DatabaseProjekt
             player.AddComponent(new SpriteRenderer());
             gameObjects.Add(player);
 
+            //eksempel på fiske oprettelse
+            //GameObject fish = new GameObject();
+            //fish.AddComponent(new Fish());
+            //fish.AddComponent(new SpriteRenderer());
+            //Fish f = fish.GetComponent<Fish>() as Fish;
+            //f.MyFishType = FishType.fjordfish;
+            //fish.Tag = "Salmon";
+            //fish.Transform.Position = new Vector2(100, 100);
+            //gameObjects.Add(fish);
+
+            
+
             CreateDb();
 
 
