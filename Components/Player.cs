@@ -12,7 +12,8 @@ namespace DatabaseProjekt
         private Animator animator;
         private Texture2D rectangleTexture;
         private int score;
-
+        private Vector2 castVector;
+        private bool hasCast = false;
 
         public double Power { get => power; }
         public int UserID { get => userID; set => userID = value; }
@@ -22,9 +23,9 @@ namespace DatabaseProjekt
             get
             {
                 return new Rectangle(
-                    (int)GameObject.Transform.Position.X,
+                    (int)GameObject.Transform.Position.X+20,
                     (int)GameObject.Transform.Position.Y,
-                    50,
+                    20,
                     (int)Power
                     );
             }
@@ -33,14 +34,17 @@ namespace DatabaseProjekt
 
         public void CastOut()
         {
-            //map x * Power eller noget i den stil for at få afstanden
+            
+            castVector.X += (int)power * 9;
             power = 0;
+            hasCast = true;
 
         }
 
         public void CastOutMeter(double power)
         {
-
+            castVector.X = GameObject.Transform.Position.X;
+            hasCast = false;
             if (Power <= 100)
             {
                 power *= -10;
@@ -53,15 +57,32 @@ namespace DatabaseProjekt
         public override void Awake()
         {
             rectangleTexture = GameWorld.Instance.Content.Load<Texture2D>("Pixel");
+            castVector = new Vector2(GameObject.Transform.Position.X, GameObject.Transform.Position.Y);
         }
 
+        public void DrawLine(SpriteBatch spriteBatch)
+        {
+            if (hasCast)
+            {
+                //rod depth 
+                for (int i = 0; i < 500; i++)
+                {
+                   
+                    spriteBatch.Draw(rectangleTexture, new Vector2(castVector.X, castVector.Y + i), Color.Black);
+
+                }
+            }
+
+
+        }
 
         public override void Start()
         {
             SpriteRenderer sr = GameObject.GetComponent<SpriteRenderer>() as SpriteRenderer;
             // sr.SetSprite("Insert sprite path here");
             sr.SetSprite("MinerTest");
-            GameObject.Transform.Position = new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2, GameWorld.Instance.Graphics.PreferredBackBufferHeight - sr.Sprite.Height * 2);
+
+            GameObject.Transform.Position = new Vector2(50, 50);
             animator = (Animator)GameObject.GetComponent<Animator>();
 
 
@@ -77,7 +98,10 @@ namespace DatabaseProjekt
         public void DrawRectangle(SpriteBatch spriteBatch)
         {
 
-            spriteBatch.Draw(rectangleTexture, PowerBar, Color.Red);
+            spriteBatch.Draw(rectangleTexture, PowerBar, Color.Green);
+            if (hasCast)
+                spriteBatch.Draw(rectangleTexture, castVector, Color.Black);
+            DrawLine(spriteBatch);
         }
 
         #region dbstuff
