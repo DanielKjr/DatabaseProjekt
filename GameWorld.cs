@@ -21,7 +21,7 @@ namespace DatabaseProjekt
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        
+        public SQLiteConnection connection = new SQLiteConnection("Data Source=FishingFrenzy.db");
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<GameObject> newGameObjects = new List<GameObject>();
         private List<GameObject> destroyedGameObjects = new List<GameObject>();
@@ -63,7 +63,8 @@ namespace DatabaseProjekt
 
             //skal flyttes ind i userinterface
             GameObject player = PlayerFactory.Instance.CreateObject();
-
+            Player p = player.GetComponent<Player>() as Player;
+            p.UserID = 1;
             gameObjects.Add(player);
 
             //eksempel på fiske instantiering
