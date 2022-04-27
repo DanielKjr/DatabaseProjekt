@@ -10,10 +10,15 @@ namespace DatabaseProjekt
 {
     public class UserInterface
     {
+        private FishType currentArea;
+        private Texture2D[] sprites = new Texture2D[3];
+        private Texture2D[] areaSprites = new Texture2D[3];
+        private Texture2D sprite;
         private SpriteFont saveSelectFont;
         private SpriteFont titleScreenFont;
-        private Texture2D[] sprites = new Texture2D[4];
-        private Texture2D sprite;
+
+        private KeyboardState kState;
+        private KeyboardState kStateOld;
         private MouseState mState;
         private bool mLeftReleased = true;
 
@@ -38,18 +43,26 @@ namespace DatabaseProjekt
         {
             sprites[0] = GameWorld.Instance.Content.Load<Texture2D>("saveSelect");
             sprites[1] = GameWorld.Instance.Content.Load<Texture2D>("titleScreenBackground");
-            //sprites[2] = GameWorld.Instance.Content.Load<Texture2D>("");
+            sprites[2] = GameWorld.Instance.Content.Load<Texture2D>("riverBackground");
             //sprites[3] = GameWorld.Instance.Content.Load<Texture2D>("");
             //sprites[4] = GameWorld.Instance.Content.Load<Texture2D>("");
+            areaSprites[0] = GameWorld.Instance.Content.Load<Texture2D>("riverBackground");
+            areaSprites[1] = GameWorld.Instance.Content.Load<Texture2D>("seaBackGround");
+            areaSprites[2] = GameWorld.Instance.Content.Load<Texture2D>("fjordBackground");
 
 
 
             saveSelectFont = GameWorld.Instance.Content.Load<SpriteFont>("saveSelectFont");
             titleScreenFont = GameWorld.Instance.Content.Load<SpriteFont>("titleScreenFont");
+
+
+
+
         }
         public void Update(GameTime gameTime)
         {
             mState = Mouse.GetState();
+            kState = Keyboard.GetState();
             switch (GameWorld.Instance.GameState)
             {
                 case GameState.SaveSelect:
@@ -62,7 +75,7 @@ namespace DatabaseProjekt
 
                     break;
                 case GameState.Playing:
-
+                    Playing();
                     break;
                 case GameState.End:
 
@@ -94,7 +107,7 @@ namespace DatabaseProjekt
                     GameWorld.Instance.GameState = GameState.TitleScreen;
 
                 }
-    
+
             }
             if (mState.LeftButton == ButtonState.Released)
             {
@@ -109,15 +122,15 @@ namespace DatabaseProjekt
                 mLeftReleased = false;
                 if (mState.Position.X < 375 && mState.Position.X > 64 && mState.Position.Y < 690 && mState.Position.Y > 630)
                 {
-                    GameWorld.Instance.GameState = GameState.SaveSelect;
+                    GameWorld.Instance.GameState = GameState.Playing;
 
                 }
                 if (mState.Position.X < 200 && mState.Position.X > 10 && mState.Position.Y < 120 && mState.Position.Y > 50)
                 {
-                    GameWorld.Instance.GameState = GameState.SaveSelect;
+                    GameWorld.Instance.GameState = GameState.Playing;
                 }
 
-                
+
             }
             if (mState.LeftButton == ButtonState.Released)
             {
@@ -131,7 +144,42 @@ namespace DatabaseProjekt
         }
         public void Playing()
         {
-            sprite = sprites[3];
+            sprite = sprites[2];
+            sprites[2] = areaSprites[(int)currentArea];
+            if (currentArea == FishType.river)
+            {
+
+                if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
+                {
+                    currentArea = FishType.sea;
+                }
+                kStateOld = kState;
+            }
+            
+            if (currentArea == FishType.sea)
+            {
+
+                if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
+                {
+                    currentArea = FishType.fjord;
+                }
+                if (kState.IsKeyDown(Keys.Right) && kState != kStateOld)
+                {
+                    currentArea = FishType.river;
+                }
+                kStateOld = kState;
+            }
+            
+            if (currentArea == FishType.fjord)
+            {
+                if (kState.IsKeyDown(Keys.Right) && kState != kStateOld)
+                {
+                    currentArea = FishType.sea;
+                }
+                kStateOld = kState;
+            }
+            
+            
         }
         public void End()
         {
@@ -139,7 +187,7 @@ namespace DatabaseProjekt
         }
         public void Draw(SpriteBatch spriteBatch)
         {
-           
+
             spriteBatch.Draw(sprite, new Vector2(0, 0), Color.White);
             switch (GameWorld.Instance.GameState)
             {
