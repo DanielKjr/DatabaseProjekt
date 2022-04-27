@@ -6,11 +6,12 @@ namespace DatabaseProjekt
 
     public class Player : Component, IDatabaseImporter
     {
+        
         private float speed;
         private int userID;
         private Animator animator;
         private int score;
-
+        
 
         public int UserID { get => userID; set => userID = value; }
 
@@ -70,12 +71,12 @@ namespace DatabaseProjekt
         {
             Open();
             //indsæt værdier før det køres
-            var cmd = new SQLiteCommand("SELECT attributes FROM table", GameWorld.Instance.connection);
+            var cmd = new SQLiteCommand($"SELECT Score FROM highscore WHERE Id={userID}", GameWorld.Instance.connection);
             var dataread = cmd.ExecuteReader();
 
             while (dataread.Read())
             {
-               
+                score = dataread.GetInt32(0);
             }
 
             Close();
@@ -90,6 +91,15 @@ namespace DatabaseProjekt
             Open();
 
             var cmd = new SQLiteCommand($"INSERT INTO highscore (Id, Score) VALUES ({userID}, {score})", GameWorld.Instance.connection);
+            cmd.ExecuteNonQuery();
+
+            Close();
+        }
+        public void SaveUserScore(int score)
+        {
+            Open();
+
+            var cmd = new SQLiteCommand($"INSERT INTO userslots (Id, score) VALUES ({UserID}, { score})", GameWorld.Instance.connection);
             cmd.ExecuteNonQuery();
 
             Close();
