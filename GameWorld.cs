@@ -21,7 +21,7 @@ namespace DatabaseProjekt
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
+        private Random rand = new Random();
         public SQLiteConnection connection = new SQLiteConnection("Data Source=FishingFrenzy.db");
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<GameObject> newGameObjects = new List<GameObject>();
@@ -88,7 +88,9 @@ namespace DatabaseProjekt
             Fish f = fish.GetComponent<Fish>() as Fish;
             f.MyFishType = type;
             f.GameObject.Tag = species;
-            f.GameObject.Transform.Position =new Vector2(0, depth);
+            
+            f.GameObject.Transform.Position =new Vector2(rand.Next(150,950), depth);
+
 
 
             return fish;
