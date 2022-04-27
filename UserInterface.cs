@@ -10,7 +10,7 @@ namespace DatabaseProjekt
 {
     public class UserInterface : IDatabaseImporter
     {
-        
+
         private FishType currentArea;
         private Texture2D[] sprites = new Texture2D[3];
         private Texture2D[] areaSprites = new Texture2D[3];
@@ -24,10 +24,10 @@ namespace DatabaseProjekt
         private bool mLeftReleased = true;
         private bool playerMade = false;
         private int saveID;
+        private int[] userHighscore = new int[4];
         private bool scoreSet = false;
         private static UserInterface instance;
-        private int userHighscore;
-        public int UserHighscore { get => userHighscore; set => userHighscore = value; }
+
         public static UserInterface Instance
         {
             get
@@ -41,7 +41,7 @@ namespace DatabaseProjekt
 
         }
 
-        
+
 
         private UserInterface()
         {
@@ -101,7 +101,6 @@ namespace DatabaseProjekt
                 {
                     saveID = 1;
                     GameWorld.Instance.GameState = GameState.TitleScreen;
-
                 }
                 if (mState.Position.X < 1000 && mState.Position.X > 666 && mState.Position.Y < 295 && mState.Position.Y > 50)
                 {
@@ -207,7 +206,10 @@ namespace DatabaseProjekt
             {
                 case GameState.SaveSelect:
                     GetAttributes();
-                    spriteBatch.DrawString(titleScreenFont, $"{UserHighscore}", new Vector2(70, 300), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[0]}", new Vector2(70, 300), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[1]}", new Vector2(670, 300), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[2]}", new Vector2(70, 425), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[3]}", new Vector2(670, 425), Color.White);
                     break;
                 case GameState.TitleScreen:
                     spriteBatch.DrawString(titleScreenFont, "Play", new Vector2(15, 630), Color.White);
@@ -241,12 +243,18 @@ namespace DatabaseProjekt
         public void GetAttributes()
         {
             Open();
-            var cmd = new SQLiteCommand($"SELECT Score FROM highscore WHERE Id={saveID}", GameWorld.Instance.connection);
-            var dataread = cmd.ExecuteReader();
-
-            while (dataread.Read())
+            
+            for (int i = 1; i < 4; i++)
             {
-                UserHighscore = dataread.GetInt32(0);
+                
+                var cmd = new SQLiteCommand($"SELECT Score FROM highscore WHERE Id={i}", GameWorld.Instance.connection);
+                var dataread = cmd.ExecuteReader();
+
+                while (dataread.Read())
+                {
+                   userHighscore[i-1]  = dataread.GetInt32(0);
+                }
+                
             }
             Close();
         }
@@ -259,7 +267,7 @@ namespace DatabaseProjekt
                 Player p = player.GetComponent<Player>() as Player;
                 p.UserID = saveID;
                 p.SaveHighScore(200);
-                
+
                 GameWorld.Instance.Instantiate(player);
 
                 playerMade = true;
