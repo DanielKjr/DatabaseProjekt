@@ -28,6 +28,9 @@ namespace DatabaseProjekt
         {
             if(Sprite != null)
             spriteBatch.Draw(Sprite, GameObject.Transform.Position, null, Color.White, 0, Origin, 1, SpriteEffects.None, 1);
+
+            Player player = (Player)GameWorld.Instance.FindObjectOfType<Player>();
+            player.DrawRectangle(spriteBatch);
         }
     }
 }

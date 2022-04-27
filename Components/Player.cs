@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Data.SQLite;
 
 namespace DatabaseProjekt
@@ -6,47 +7,108 @@ namespace DatabaseProjekt
 
     public class Player : Component, IDatabaseImporter
     {
-        
-        private float speed;
+
+        private double power = 0;
+
         private int userID;
         private Animator animator;
+        private Texture2D rectangleTexture;
         private int score;
-        
+
+        private Vector2 castVector;
+        private bool hasCast = false;
+
+        public double Power { get => power; }
 
         public int UserID { get => userID; set => userID = value; }
 
-        public void Move(Vector2 _velocity)
+        public Rectangle PowerBar
         {
-            if (_velocity != Vector2.Zero)
+            get
             {
-                _velocity.Normalize();
+                return new Rectangle(
+                    (int)GameObject.Transform.Position.X+20,
+                    (int)GameObject.Transform.Position.Y,
+                    20,
+                    (int)Power
+                    );
             }
 
-            _velocity *= speed;
-
-            GameObject.Transform.Translate(_velocity * GameWorld.DeltaTime);
         }
+
+        public void CastOut()
+        {
+            
+            castVector.X += (int)power * 9;
+            power = 0;
+            hasCast = true;
+
+        }
+
+        public void CastOutMeter(double power)
+        {
+            castVector.X = GameObject.Transform.Position.X;
+            hasCast = false;
+            if (Power <= 100)
+            {
+                power *= -10;
+            }
+
+            this.power += power;
+        }
+
 
         public override void Awake()
         {
-            speed = 200;
+            rectangleTexture = GameWorld.Instance.Content.Load<Texture2D>("Pixel");
+            castVector = new Vector2(GameObject.Transform.Position.X, GameObject.Transform.Position.Y);
         }
 
+        public void DrawLine(SpriteBatch spriteBatch)
+        {
+            if (hasCast)
+            {
+                //rod depth 
+                for (int i = 0; i < 500; i++)
+                {
+                   
+                    spriteBatch.Draw(rectangleTexture, new Vector2(castVector.X, castVector.Y + i), Color.Black);
+
+                }
+            }
+
+
+        }
 
         public override void Start()
         {
             SpriteRenderer sr = GameObject.GetComponent<SpriteRenderer>() as SpriteRenderer;
             // sr.SetSprite("Insert sprite path here");
             sr.SetSprite("MinerTest");
-            GameObject.Transform.Position = new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2, GameWorld.Instance.Graphics.PreferredBackBufferHeight - sr.Sprite.Height / 2);
+
+            GameObject.Transform.Position = new Vector2(50, 50);
             animator = (Animator)GameObject.GetComponent<Animator>();
+
+
         }
 
         public override void Update(GameTime gameTime)
         {
+
             InputHandler.Instance.Execute(this);
+
         }
 
+        public void DrawRectangle(SpriteBatch spriteBatch)
+        {
+
+            spriteBatch.Draw(rectangleTexture, PowerBar, Color.Green);
+            if (hasCast)
+                spriteBatch.Draw(rectangleTexture, castVector, Color.Black);
+            DrawLine(spriteBatch);
+        }
+
+        #region dbstuff
         public void Open()
         {
             GameWorld.Instance.connection.Open();
@@ -76,7 +138,9 @@ namespace DatabaseProjekt
 
             while (dataread.Read())
             {
+
                 score = dataread.GetInt32(0);
+
             }
 
             Close();
@@ -95,6 +159,7 @@ namespace DatabaseProjekt
 
             Close();
         }
+
         public void SaveUserScore(int score)
         {
             Open();
@@ -104,5 +169,9 @@ namespace DatabaseProjekt
 
             Close();
         }
+
+
+        #endregion
+
     }
 }

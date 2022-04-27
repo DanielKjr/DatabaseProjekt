@@ -17,15 +17,27 @@ namespace DatabaseProjekt
         private Texture2D sprite;
         private SpriteFont saveSelectFont;
         private SpriteFont titleScreenFont;
-
+        string species;
+        double weight;
+        int depth;
         private KeyboardState kState;
         private KeyboardState kStateOld;
         private MouseState mState;
         private bool mLeftReleased = true;
+
         private bool playerMade = false;
         private int saveID;
         private int[] userHighscore = new int[4];
         private bool scoreSet = false;
+
+        private string[] myType = new string[]
+       {
+            "riverfish",
+            "seafish",
+            "fjordfish"
+       };
+
+
         private static UserInterface instance;
 
         public static UserInterface Instance
@@ -47,6 +59,35 @@ namespace DatabaseProjekt
         {
 
         }
+        public void FishSpawner(FishType area, int amount)
+        {
+            GameWorld.Instance.connection.Open();
+
+           
+            for (int i = 0; i < 3; i++)
+            {
+               var cmd = new SQLiteCommand($"SELECT Id,Species, Depth, Weight FROM '{myType[(int)currentArea]}' WHERE Id={i}", GameWorld.Instance.connection);
+              var  dataread = cmd.ExecuteReader();
+               
+                while (dataread.Read())
+                {
+                     species = dataread.GetString(1);
+                     depth = dataread.GetInt32(2);
+                     weight = dataread.GetDouble(3);
+                   
+                }
+                for (int x = 0; x < amount; x++)
+                {
+                    GameWorld.Instance.Instantiate(
+                    GameWorld.Instance.SpawnFish(currentArea, species, depth));
+                }
+            }
+            
+
+            GameWorld.Instance.connection.Close();
+        }
+
+
         public void Start()
         {
             sprites[0] = GameWorld.Instance.Content.Load<Texture2D>("saveSelect");
@@ -161,10 +202,11 @@ namespace DatabaseProjekt
             CreatePlayer();
             if (currentArea == FishType.river)
             {
-
+                //FishSpawner(currentArea, 2);
                 if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
                 {
                     currentArea = FishType.sea;
+                    
                 }
                 kStateOld = kState;
             }
