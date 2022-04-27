@@ -5,11 +5,11 @@ namespace DatabaseProjekt
     public class RodCommand : ICommand
     {
         private Vector2 velocity;
-        public static double Power { get; set; }
+        private double power;
 
         public RodCommand(double power)
         {
-            Power += power;
+            this.power += power;
 
         }
 
@@ -17,11 +17,8 @@ namespace DatabaseProjekt
 
         public void CastOutMeter(Player player)
         {
-            
-            if (Power >= -100 )
-            {
-                Power -= -1d;
-            }
+
+            player.CastOutMeter(power);
            
 
         }
@@ -30,7 +27,8 @@ namespace DatabaseProjekt
         {
             // player.Move(velocity);
 
-            player.CastOut(Power);
+            player.CastOut();
+           
         }
     }
 }

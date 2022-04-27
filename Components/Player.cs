@@ -25,16 +25,28 @@ namespace DatabaseProjekt
                     (int)GameObject.Transform.Position.X,
                     (int)GameObject.Transform.Position.Y,
                     50,
-                    (int)RodCommand.Power
+                    (int)Power
                     );
             }
-            
-        }
-       
-        public void CastOut(double power)
-        {
-           this.power *= power;
 
+        }
+
+        public void CastOut()
+        {
+            //map x * Power eller noget i den stil for at få afstanden
+            power = 0;
+
+        }
+
+        public void CastOutMeter(double power)
+        {
+
+            if (Power <= 100)
+            {
+                power *= -10;
+            }
+
+            this.power += power;
         }
 
 
@@ -51,20 +63,20 @@ namespace DatabaseProjekt
             sr.SetSprite("MinerTest");
             GameObject.Transform.Position = new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2, GameWorld.Instance.Graphics.PreferredBackBufferHeight - sr.Sprite.Height * 2);
             animator = (Animator)GameObject.GetComponent<Animator>();
-            
-            
+
+
         }
 
         public override void Update(GameTime gameTime)
         {
-            
+
             InputHandler.Instance.Execute(this);
-            
+
         }
 
         public void DrawRectangle(SpriteBatch spriteBatch)
         {
-           
+
             spriteBatch.Draw(rectangleTexture, PowerBar, Color.Red);
         }
 
@@ -98,7 +110,7 @@ namespace DatabaseProjekt
 
             while (dataread.Read())
             {
-               
+
             }
 
             Close();
