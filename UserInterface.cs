@@ -10,7 +10,7 @@ namespace DatabaseProjekt
 {
     public class UserInterface : IDatabaseImporter
     {
-        private SQLiteConnection connection = new SQLiteConnection("Data Source=FishingFrenzy.db");
+        
         private FishType currentArea;
         private Texture2D[] sprites = new Texture2D[3];
         private Texture2D[] areaSprites = new Texture2D[3];
@@ -27,7 +27,7 @@ namespace DatabaseProjekt
         private bool scoreSet = false;
         private static UserInterface instance;
         private int userHighscore;
-
+        public int UserHighscore { get => userHighscore; set => userHighscore = value; }
         public static UserInterface Instance
         {
             get
@@ -40,6 +40,9 @@ namespace DatabaseProjekt
             }
 
         }
+
+        
+
         private UserInterface()
         {
 
@@ -203,8 +206,8 @@ namespace DatabaseProjekt
             switch (GameWorld.Instance.GameState)
             {
                 case GameState.SaveSelect:
-                    //GetAttributes();
-                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore}", new Vector2(70, 300), Color.White);
+                    GetAttributes();
+                    spriteBatch.DrawString(titleScreenFont, $"{UserHighscore}", new Vector2(70, 300), Color.White);
                     break;
                 case GameState.TitleScreen:
                     spriteBatch.DrawString(titleScreenFont, "Play", new Vector2(15, 630), Color.White);
@@ -217,12 +220,12 @@ namespace DatabaseProjekt
 
         public void Open()
         {
-            connection.Open();
+            GameWorld.Instance.connection.Open();
         }
 
         public void Close()
         {
-            connection.Close();
+            GameWorld.Instance.connection.Close();
         }
 
         public void GetTexture()
@@ -243,7 +246,7 @@ namespace DatabaseProjekt
 
             while (dataread.Read())
             {
-                userHighscore = dataread.GetInt32(0);
+                UserHighscore = dataread.GetInt32(0);
             }
             Close();
         }
@@ -256,7 +259,7 @@ namespace DatabaseProjekt
                 Player p = player.GetComponent<Player>() as Player;
                 p.UserID = saveID;
                 p.SaveHighScore(200);
-                p.GetAttributes();
+                
                 GameWorld.Instance.Instantiate(player);
 
                 playerMade = true;
