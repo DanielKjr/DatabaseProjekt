@@ -25,12 +25,11 @@ namespace DatabaseProjekt
         public InputHandler()
         {
             Player player = (Player)GameWorld.Instance.FindObjectOfType<Player>();
+            
 
-            //example of keybinds
-            keybinds.Add(new KeyInfo(Keys.D), new MoveCommand(new Vector2(1, 0)));
-            keybinds.Add(new KeyInfo(Keys.W), new MoveCommand(new Vector2(0, -1)));
-            keybinds.Add(new KeyInfo(Keys.A), new MoveCommand(new Vector2(-1, 0)));
-            keybinds.Add(new KeyInfo(Keys.S), new MoveCommand(new Vector2(0, 1)));
+            keybinds.Add(new KeyInfo(Keys.Space), new RodCommand(-0.1d));
+ 
+
         }
 
         public void Execute(Player player)
@@ -42,13 +41,25 @@ namespace DatabaseProjekt
             {
                 if (keyState.IsKeyDown(k.Key))
                 {
-                    keybinds[k].Execute(player);
+                    keybinds[k].CastOutMeter(player);
                     k.IsDown = true;
                 }
 
                 if (!keyState.IsKeyDown(k.Key) && k.IsDown == true)
                 {
+                    keybinds[k].Execute(player);
+                }
+            }
+        }
 
+        public void CastOut(float power)
+        {
+            KeyboardState keyState = Keyboard.GetState();
+            foreach (KeyInfo k in keybinds.Keys)
+            {
+                if (keyState.IsKeyDown(k.Key))
+                {
+                    
                 }
             }
         }

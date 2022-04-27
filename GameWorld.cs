@@ -68,6 +68,7 @@ namespace DatabaseProjekt
             GameObject player = PlayerFactory.Instance.CreateObject();
             Player p = player.GetComponent<Player>() as Player;
             p.UserID = 1;
+           
             gameObjects.Add(player);
 
             Instantiate(SpawnFish(FishType.fjord, "Salmon"));
@@ -153,6 +154,7 @@ namespace DatabaseProjekt
             for (int i = 0; i < gameObjects.Count; i++)
             {
                 gameObjects[i].Draw(_spriteBatch);
+            
             }
 
 
