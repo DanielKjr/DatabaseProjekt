@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.3.3 on Mon Apr 25 19:34:11 2022
+-- File generated with SQLiteStudio v3.3.3 on Wed Apr 27 14:13:50 2022
 --
 -- Text encoding used: System
 --
@@ -22,7 +22,7 @@ INSERT INTO fjordfish (Id, Species, Depth, Weight, Texture) VALUES (3, 'Salmon',
 CREATE TABLE halloffish (Id integer primary key, UserId int, Species string, Weight REAL);
 
 -- Table: highscore
-CREATE TABLE highscore (Id integer primary key, Score);
+CREATE TABLE highscore (Id integer, Score);
 
 -- Table: river
 CREATE TABLE river (Id integer primary key, Species string, Depth int, Weight REAL);
@@ -60,24 +60,6 @@ INSERT INTO userslots (Id, Score) VALUES (1, 0);
 INSERT INTO userslots (Id, Score) VALUES (2, 0);
 INSERT INTO userslots (Id, Score) VALUES (3, 0);
 INSERT INTO userslots (Id, Score) VALUES (4, 0);
-
--- View: view fjord
-CREATE VIEW "view fjord" AS Select * from fjord;
-
--- View: View fjordfish
-CREATE VIEW "View fjordfish" AS Select * from fjordfish;
-
--- View: view river
-CREATE VIEW "view river" AS Select * from river;
-
--- View: view riverfish
-CREATE VIEW "view riverfish" AS select * from riverfish;
-
--- View: view sea
-CREATE VIEW "view sea" AS select * from sea;
-
--- View: View seafish
-CREATE VIEW "View seafish" AS select * from seafish;
 
 COMMIT TRANSACTION;
 PRAGMA foreign_keys = on;
