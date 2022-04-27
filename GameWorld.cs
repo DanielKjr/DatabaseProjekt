@@ -69,7 +69,7 @@ namespace DatabaseProjekt
             //eksempel på fiske instantiering
             GameObject fish = FishFactory.Instance.CreateObject();
             Fish f = fish.GetComponent<Fish>() as Fish;
-            f.MyFishType = FishType.fjordfish;
+            f.MyFishType = FishType.fjord;
             f.GameObject.Tag = "Salmon";
             gameObjects.Add(fish);
 
