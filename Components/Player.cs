@@ -7,15 +7,19 @@ namespace DatabaseProjekt
 
     public class Player : Component, IDatabaseImporter
     {
+
         private double power = 0;
+
         private int userID;
         private Animator animator;
         private Texture2D rectangleTexture;
         private int score;
+
         private Vector2 castVector;
         private bool hasCast = false;
 
         public double Power { get => power; }
+
         public int UserID { get => userID; set => userID = value; }
 
         public Rectangle PowerBar
@@ -129,11 +133,13 @@ namespace DatabaseProjekt
         {
             Open();
             //indsæt værdier før det køres
-            var cmd = new SQLiteCommand("SELECT attributes FROM table", GameWorld.Instance.connection);
+            var cmd = new SQLiteCommand($"SELECT Score FROM highscore WHERE Id={userID}", GameWorld.Instance.connection);
             var dataread = cmd.ExecuteReader();
 
             while (dataread.Read())
             {
+
+                score = dataread.GetInt32(0);
 
             }
 
@@ -154,6 +160,18 @@ namespace DatabaseProjekt
             Close();
         }
 
+        public void SaveUserScore(int score)
+        {
+            Open();
+
+            var cmd = new SQLiteCommand($"INSERT INTO userslots (Id, score) VALUES ({UserID}, { score})", GameWorld.Instance.connection);
+            cmd.ExecuteNonQuery();
+
+            Close();
+        }
+
+
         #endregion
+
     }
 }

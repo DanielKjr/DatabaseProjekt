@@ -57,19 +57,13 @@ namespace DatabaseProjekt
         protected override void Initialize()
         {
             CreateDb();
-
+            
             GameState = GameState.SaveSelect;
             UserInterface.Instance.Start();
             _graphics.PreferredBackBufferHeight = 800;
             _graphics.PreferredBackBufferWidth = 1080;
             _graphics.ApplyChanges();
 
-            //skal flyttes ind i userinterface
-            GameObject player = PlayerFactory.Instance.CreateObject();
-            Player p = player.GetComponent<Player>() as Player;
-            p.UserID = 1;
-           
-            gameObjects.Add(player);
 
             Instantiate(SpawnFish(FishType.fjord, "Salmon", 500));
 

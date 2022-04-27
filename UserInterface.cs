@@ -8,8 +8,9 @@ using System;
 
 namespace DatabaseProjekt
 {
-    public class UserInterface
+    public class UserInterface : IDatabaseImporter
     {
+
         private FishType currentArea;
         private Texture2D[] sprites = new Texture2D[3];
         private Texture2D[] areaSprites = new Texture2D[3];
@@ -23,6 +24,12 @@ namespace DatabaseProjekt
         private KeyboardState kStateOld;
         private MouseState mState;
         private bool mLeftReleased = true;
+
+        private bool playerMade = false;
+        private int saveID;
+        private int[] userHighscore = new int[4];
+        private bool scoreSet = false;
+
         private string[] myType = new string[]
        {
             "riverfish",
@@ -30,7 +37,9 @@ namespace DatabaseProjekt
             "fjordfish"
        };
 
+
         private static UserInterface instance;
+
         public static UserInterface Instance
         {
             get
@@ -43,6 +52,9 @@ namespace DatabaseProjekt
             }
 
         }
+
+
+
         private UserInterface()
         {
 
@@ -128,19 +140,22 @@ namespace DatabaseProjekt
                 mLeftReleased = false;
                 if (mState.Position.X < 375 && mState.Position.X > 64 && mState.Position.Y < 295 && mState.Position.Y > 50)
                 {
+                    saveID = 1;
                     GameWorld.Instance.GameState = GameState.TitleScreen;
-
                 }
                 if (mState.Position.X < 1000 && mState.Position.X > 666 && mState.Position.Y < 295 && mState.Position.Y > 50)
                 {
+                    saveID = 2;
                     GameWorld.Instance.GameState = GameState.TitleScreen;
                 }
                 if (mState.Position.X < 375 && mState.Position.X > 64 && mState.Position.Y < 746 && mState.Position.Y > 516)
                 {
+                    saveID = 3;
                     GameWorld.Instance.GameState = GameState.TitleScreen;
                 }
                 if (mState.Position.X < 1000 && mState.Position.X > 666 && mState.Position.Y < 746 && mState.Position.Y > 516)
                 {
+                    saveID = 4;
                     GameWorld.Instance.GameState = GameState.TitleScreen;
 
                 }
@@ -183,6 +198,8 @@ namespace DatabaseProjekt
         {
             sprite = sprites[2];
             sprites[2] = areaSprites[(int)currentArea];
+
+            CreatePlayer();
             if (currentArea == FishType.river)
             {
                 //FishSpawner(currentArea, 2);
@@ -193,7 +210,7 @@ namespace DatabaseProjekt
                 }
                 kStateOld = kState;
             }
-            
+
             if (currentArea == FishType.sea)
             {
 
@@ -207,7 +224,7 @@ namespace DatabaseProjekt
                 }
                 kStateOld = kState;
             }
-            
+
             if (currentArea == FishType.fjord)
             {
                 if (kState.IsKeyDown(Keys.Right) && kState != kStateOld)
@@ -216,8 +233,8 @@ namespace DatabaseProjekt
                 }
                 kStateOld = kState;
             }
-            
-            
+
+
         }
         public void End()
         {
@@ -229,11 +246,76 @@ namespace DatabaseProjekt
             spriteBatch.Draw(sprite, new Vector2(0, 0), Color.White);
             switch (GameWorld.Instance.GameState)
             {
+                case GameState.SaveSelect:
+                    GetAttributes();
+                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[0]}", new Vector2(70, 300), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[1]}", new Vector2(670, 300), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[2]}", new Vector2(70, 425), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[3]}", new Vector2(670, 425), Color.White);
+                    break;
                 case GameState.TitleScreen:
                     spriteBatch.DrawString(titleScreenFont, "Play", new Vector2(15, 630), Color.White);
                     spriteBatch.DrawString(titleScreenFont, "HighScore", new Vector2(15, 700), Color.White);
                     break;
+                case GameState.Playing:
+                    break;
             }
+        }
+
+        public void Open()
+        {
+            GameWorld.Instance.connection.Open();
+        }
+
+        public void Close()
+        {
+            GameWorld.Instance.connection.Close();
+        }
+
+        public void GetTexture()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetId(string type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetAttributes()
+        {
+            Open();
+            
+            for (int i = 1; i < 4; i++)
+            {
+                
+                var cmd = new SQLiteCommand($"SELECT Score FROM highscore WHERE Id={i}", GameWorld.Instance.connection);
+                var dataread = cmd.ExecuteReader();
+
+                while (dataread.Read())
+                {
+                   userHighscore[i-1]  = dataread.GetInt32(0);
+                }
+                
+            }
+            Close();
+        }
+
+        public void CreatePlayer()
+        {
+            if (playerMade == false)
+            {
+                GameObject player = PlayerFactory.Instance.CreateObject();
+                Player p = player.GetComponent<Player>() as Player;
+                p.UserID = saveID;
+                p.SaveHighScore(200);
+
+                GameWorld.Instance.Instantiate(player);
+
+                playerMade = true;
+            }
+
+
         }
     }
 }
