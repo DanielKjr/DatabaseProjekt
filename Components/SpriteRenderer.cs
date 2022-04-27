@@ -10,6 +10,7 @@ namespace DatabaseProjekt
 
         public override void Start()
         {
+            if(Sprite != null)
             Origin = new Vector2(Sprite.Width / 2, Sprite.Height / 2);
         }
 
@@ -19,11 +20,13 @@ namespace DatabaseProjekt
         /// <param name="spriteName"></param>
         public void SetSprite(string spriteName)
         {
+            if(spriteName != null)
             Sprite = GameWorld.Instance.Content.Load<Texture2D>(spriteName);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
         {
+            if(Sprite != null)
             spriteBatch.Draw(Sprite, GameObject.Transform.Position, null, Color.White, 0, Origin, 1, SpriteEffects.None, 1);
         }
     }

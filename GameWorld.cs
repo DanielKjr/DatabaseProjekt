@@ -4,7 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System.IO;
 using System.Data.SQLite;
-
+using System;
+using System.Diagnostics;
 
 namespace DatabaseProjekt
 {
@@ -44,7 +45,7 @@ namespace DatabaseProjekt
 
         }
 
-        
+
 
         private GameWorld()
         {
@@ -55,6 +56,8 @@ namespace DatabaseProjekt
 
         protected override void Initialize()
         {
+            CreateDb();
+
             GameState = GameState.SaveSelect;
             UserInterface.Instance.Start();
             _graphics.PreferredBackBufferHeight = 800;
@@ -67,18 +70,7 @@ namespace DatabaseProjekt
             p.UserID = 1;
             gameObjects.Add(player);
 
-            //eksempel på fiske instantiering
-            GameObject fish = FishFactory.Instance.CreateObject();
-            Fish f = fish.GetComponent<Fish>() as Fish;
-            f.MyFishType = FishType.fjord;
-            f.GameObject.Tag = "Salmon";
-            gameObjects.Add(fish);
-
-
-            
-
-            CreateDb();
-
+            Instantiate(SpawnFish(FishType.fjord, "Salmon"));
 
 
             for (int i = 0; i < gameObjects.Count; i++)
@@ -89,9 +81,20 @@ namespace DatabaseProjekt
             base.Initialize();
         }
 
+        public GameObject SpawnFish(FishType type, string species)
+        {
+            GameObject fish = FishFactory.Instance.CreateObject();
+            Fish f = fish.GetComponent<Fish>() as Fish;
+            f.MyFishType = type;
+            f.GameObject.Tag = species;
+
+
+            return fish;
+        }
+
         public void CreateDb()
         {
-            
+
             if (File.Exists("FishingFrenzy.db") == false)
             {
                 string sqlConnectionString = "Data Source=FishingFrenzy.db; new=True";
@@ -104,7 +107,7 @@ namespace DatabaseProjekt
 
             }
 
-           
+
 
         }
 
@@ -126,16 +129,16 @@ namespace DatabaseProjekt
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             base.Update(gameTime);
-            
-            
+
+
             DeltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             for (int i = 0; i < gameObjects.Count; i++)
             {
                 gameObjects[i].Update(gameTime);
             }
-            
-            
+
+
             //adds and removes new objects
             CleanUp();
         }
