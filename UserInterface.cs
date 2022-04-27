@@ -17,6 +17,8 @@ namespace DatabaseProjekt
         private SpriteFont saveSelectFont;
         private SpriteFont titleScreenFont;
         string species;
+        double weight;
+        int depth;
         private KeyboardState kState;
         private KeyboardState kStateOld;
         private MouseState mState;
@@ -58,14 +60,14 @@ namespace DatabaseProjekt
                 while (dataread.Read())
                 {
                      species = dataread.GetString(1);
-                    double depth = dataread.GetInt32(2);
-                    double weight = dataread.GetDouble(3);
+                     depth = dataread.GetInt32(2);
+                     weight = dataread.GetDouble(3);
                    
                 }
                 for (int x = 0; x < amount; x++)
                 {
                     GameWorld.Instance.Instantiate(
-                    GameWorld.Instance.SpawnFish(currentArea, species));
+                    GameWorld.Instance.SpawnFish(currentArea, species, depth));
                 }
             }
             
@@ -183,7 +185,7 @@ namespace DatabaseProjekt
             sprites[2] = areaSprites[(int)currentArea];
             if (currentArea == FishType.river)
             {
-                FishSpawner(currentArea, 2);
+                //FishSpawner(currentArea, 2);
                 if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
                 {
                     currentArea = FishType.sea;
