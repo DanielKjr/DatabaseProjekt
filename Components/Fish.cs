@@ -27,6 +27,8 @@ namespace DatabaseProjekt
             "fjordfish"
         };
 
+       
+
 
         public FishType MyFishType { get => myFishType; set => myFishType = value; }
         public float Weight { get => weight; set => weight = value; }
