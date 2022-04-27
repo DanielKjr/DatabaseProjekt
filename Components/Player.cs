@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Data.SQLite;
 
 namespace DatabaseProjekt
@@ -6,29 +7,40 @@ namespace DatabaseProjekt
 
     public class Player : Component, IDatabaseImporter
     {
-        private float speed;
+        private double power = 0;
         private int userID;
         private Animator animator;
+        private Texture2D rectangleTexture;
         private int score;
 
 
+        public double Power { get => power; }
         public int UserID { get => userID; set => userID = value; }
 
-        public void Move(Vector2 _velocity)
+        public Rectangle PowerBar
         {
-            if (_velocity != Vector2.Zero)
+            get
             {
-                _velocity.Normalize();
+                return new Rectangle(
+                    (int)GameObject.Transform.Position.X,
+                    (int)GameObject.Transform.Position.Y,
+                    50,
+                    (int)RodCommand.Power
+                    );
             }
-
-            _velocity *= speed;
-
-            GameObject.Transform.Translate(_velocity * GameWorld.DeltaTime);
+            
         }
+       
+        public void CastOut(double power)
+        {
+           this.power *= power;
+
+        }
+
 
         public override void Awake()
         {
-            speed = 200;
+            rectangleTexture = GameWorld.Instance.Content.Load<Texture2D>("Pixel");
         }
 
 
@@ -37,15 +49,26 @@ namespace DatabaseProjekt
             SpriteRenderer sr = GameObject.GetComponent<SpriteRenderer>() as SpriteRenderer;
             // sr.SetSprite("Insert sprite path here");
             sr.SetSprite("MinerTest");
-            GameObject.Transform.Position = new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2, GameWorld.Instance.Graphics.PreferredBackBufferHeight - sr.Sprite.Height / 2);
+            GameObject.Transform.Position = new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2, GameWorld.Instance.Graphics.PreferredBackBufferHeight - sr.Sprite.Height * 2);
             animator = (Animator)GameObject.GetComponent<Animator>();
+            
+            
         }
 
         public override void Update(GameTime gameTime)
         {
+            
             InputHandler.Instance.Execute(this);
+            
         }
 
+        public void DrawRectangle(SpriteBatch spriteBatch)
+        {
+           
+            spriteBatch.Draw(rectangleTexture, PowerBar, Color.Red);
+        }
+
+        #region dbstuff
         public void Open()
         {
             GameWorld.Instance.connection.Open();
@@ -94,5 +117,7 @@ namespace DatabaseProjekt
 
             Close();
         }
+
+        #endregion
     }
 }
