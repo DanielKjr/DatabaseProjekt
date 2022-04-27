@@ -71,7 +71,7 @@ namespace DatabaseProjekt
            
             gameObjects.Add(player);
 
-            Instantiate(SpawnFish(FishType.fjord, "Salmon"));
+            Instantiate(SpawnFish(FishType.fjord, "Salmon", 500));
 
 
             for (int i = 0; i < gameObjects.Count; i++)
@@ -82,12 +82,13 @@ namespace DatabaseProjekt
             base.Initialize();
         }
 
-        public GameObject SpawnFish(FishType type, string species)
+        public GameObject SpawnFish(FishType type, string species, int depth)
         {
             GameObject fish = FishFactory.Instance.CreateObject();
             Fish f = fish.GetComponent<Fish>() as Fish;
             f.MyFishType = type;
             f.GameObject.Tag = species;
+            f.GameObject.Transform.Position =new Vector2(0, depth);
 
 
             return fish;
