@@ -21,6 +21,8 @@ namespace DatabaseProjekt
         public double Power { get => power; }
 
         public int UserID { get => userID; set => userID = value; }
+        public int Score { get => score; set => score = value; }
+        public Vector2 CastVector { get => castVector; }
 
         public Rectangle PowerBar
         {
@@ -69,7 +71,7 @@ namespace DatabaseProjekt
             if (hasCast)
             {
                 //rod depth 
-                for (int i = 0; i < 500; i++)
+                for (int i = 0; i < 300; i++)
                 {
                    
                     spriteBatch.Draw(rectangleTexture, new Vector2(castVector.X, castVector.Y + i), Color.Black);

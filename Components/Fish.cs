@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using Microsoft.Xna.Framework;
+using System.Data.SQLite;
 /// <summary>
 /// FishType is used to specify which data table the fish is found.
 /// The index of the enum is used to match the myType string array in the Fish.cs
@@ -27,7 +28,7 @@ namespace DatabaseProjekt
             "fjordfish"
         };
 
-       
+
 
 
         public FishType MyFishType { get => myFishType; set => myFishType = value; }
@@ -105,6 +106,17 @@ namespace DatabaseProjekt
             }
         }
 
+
+        public override void Update(GameTime gameTime)
+        {
+            Player player = (Player)GameWorld.Instance.FindObjectOfType<Player>();
+
+            if (GameObject.Transform.Position.Y - player.CastVector.Y  < 60 )
+             {
+                player.Score += (int)weight;
+                GameWorld.Instance.Destroy(this.GameObject);
+            }
+        }
 
     }
 }
