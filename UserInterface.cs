@@ -25,6 +25,7 @@ namespace DatabaseProjekt
         private string species;
         private double weight;
         private int depth;
+        private bool hasSpawned = false;
 
         private bool playerMade = false;
         private int saveID;
@@ -62,29 +63,34 @@ namespace DatabaseProjekt
         }
         public void FishSpawner(FishType area, int amount)
         {
-            GameWorld.Instance.connection.Open();
-
-
-            for (int i = 0; i < 3; i++)
+            if (!hasSpawned)
             {
-                var cmd = new SQLiteCommand($"SELECT Id,Species, Depth, Weight FROM '{myType[(int)currentArea]}' WHERE Id={i}", GameWorld.Instance.connection);
-                var dataread = cmd.ExecuteReader();
+                GameWorld.Instance.connection.Open();
 
-                while (dataread.Read())
-                {
-                    species = dataread.GetString(1);
-                    depth = dataread.GetInt32(2);
-                    weight = dataread.GetDouble(3);
 
-                }
-                for (int x = 0; x < amount; x++)
+                for (int i = 1; i < 4; i++)
                 {
-                    GameWorld.Instance.Instantiate(SpawnFish(currentArea, species, depth));
+                    var cmd = new SQLiteCommand($"SELECT Id,Species, Depth, Weight FROM '{myType[(int)currentArea]}' WHERE Id={i}", GameWorld.Instance.connection);
+                    var dataread = cmd.ExecuteReader();
+
+                    while (dataread.Read())
+                    {
+                        species = dataread.GetString(1);
+                        depth = dataread.GetInt32(2);
+                        weight = dataread.GetDouble(3);
+
+                    }
+                    for (int x = 0; x < amount; x++)
+                    {
+                        GameWorld.Instance.Instantiate(SpawnFish(currentArea, species, depth));
+                    }
                 }
+
+
+                GameWorld.Instance.connection.Close();
+                hasSpawned = true;
             }
 
-
-            GameWorld.Instance.connection.Close();
         }
 
         public GameObject SpawnFish(FishType type, string species, int depth)
@@ -215,7 +221,7 @@ namespace DatabaseProjekt
             CreatePlayer();
             if (currentArea == FishType.river)
             {
-                //FishSpawner(currentArea, 2);
+                FishSpawner(currentArea, 2);
                 if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
                 {
                     currentArea = FishType.sea;
@@ -226,7 +232,7 @@ namespace DatabaseProjekt
 
             if (currentArea == FishType.sea)
             {
-               
+
                 if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
                 {
                     currentArea = FishType.fjord;
