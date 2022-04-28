@@ -71,14 +71,13 @@ namespace DatabaseProjekt
             if (hasCast)
             {
                 //rod depth 
-                for (int i = 0; i < 300; i++)
-                {
-                   
+                for (int i = 0; i < 700; i++)
+                {                  
                     spriteBatch.Draw(rectangleTexture, new Vector2(castVector.X, castVector.Y + i), Color.Black);
-
                 }
+                
             }
-
+            
 
         }
 
@@ -88,7 +87,7 @@ namespace DatabaseProjekt
             // sr.SetSprite("Insert sprite path here");
             sr.SetSprite("MinerTest");
 
-            GameObject.Transform.Position = new Vector2(50, 50);
+            
             animator = (Animator)GameObject.GetComponent<Animator>();
 
 
@@ -98,6 +97,18 @@ namespace DatabaseProjekt
         {
 
             InputHandler.Instance.Execute(this);
+            if (UserInterface.Instance.currentArea == FishType.river)
+            {
+                GameObject.Transform.Position = new Vector2(100, 210);
+            }
+            if (UserInterface.Instance.currentArea == FishType.sea)
+            {
+                GameObject.Transform.Position = new Vector2(180, 150);
+            }
+            if (UserInterface.Instance.currentArea == FishType.fjord)
+            {
+                GameObject.Transform.Position = new Vector2(30, 205);
+            }
 
         }
 
@@ -106,7 +117,6 @@ namespace DatabaseProjekt
 
             spriteBatch.Draw(rectangleTexture, PowerBar, Color.Green);
             if (hasCast)
-                spriteBatch.Draw(rectangleTexture, castVector, Color.Black);
             DrawLine(spriteBatch);
         }
 
@@ -156,7 +166,7 @@ namespace DatabaseProjekt
         {
             Open();
 
-            var cmd = new SQLiteCommand($"INSERT INTO highscore (Id, Score) VALUES ({userID}, {score})", GameWorld.Instance.connection);
+            var cmd = new SQLiteCommand($"INSERT INTO highscore (Id, UserId, Score) VALUES (null, {userID}, {score})", GameWorld.Instance.connection);
             cmd.ExecuteNonQuery();
 
             Close();

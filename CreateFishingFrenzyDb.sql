@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.3.3 on Wed Apr 27 14:13:50 2022
+-- File generated with SQLiteStudio v3.3.3 on Thu Apr 28 14:06:21 2022
 --
 -- Text encoding used: System
 --
@@ -22,7 +22,7 @@ INSERT INTO fjordfish (Id, Species, Depth, Weight, Texture) VALUES (3, 'Salmon',
 CREATE TABLE halloffish (Id integer primary key, UserId int, Species string, Weight REAL);
 
 -- Table: highscore
-CREATE TABLE highscore (Id integer, Score);
+CREATE TABLE highscore (Id integer PRIMARY KEY, UserId INTEGER, Score INTEGER);
 
 -- Table: river
 CREATE TABLE river (Id integer primary key, Species string, Depth int, Weight REAL);

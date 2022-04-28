@@ -109,10 +109,11 @@ namespace DatabaseProjekt
 
         public override void Update(GameTime gameTime)
         {
+            
             Player player = (Player)GameWorld.Instance.FindObjectOfType<Player>();
-
-            if (GameObject.Transform.Position.Y - player.CastVector.Y  < 60 )
-             {
+            
+            if (GameObject.Transform.Position.X < player.CastVector.X + 40 && GameObject.Transform.Position.X > player.CastVector.X - 40)
+            {
                 player.Score += (int)weight;
                 GameWorld.Instance.Destroy(this.GameObject);
             }
