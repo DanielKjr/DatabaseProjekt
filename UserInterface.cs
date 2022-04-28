@@ -10,20 +10,21 @@ namespace DatabaseProjekt
 {
     public class UserInterface : IDatabaseImporter
     {
-
+        private Random rand = new Random();
         private FishType currentArea;
         private Texture2D[] sprites = new Texture2D[3];
         private Texture2D[] areaSprites = new Texture2D[3];
         private Texture2D sprite;
         private SpriteFont saveSelectFont;
         private SpriteFont titleScreenFont;
-        string species;
-        double weight;
-        int depth;
+
         private KeyboardState kState;
         private KeyboardState kStateOld;
         private MouseState mState;
         private bool mLeftReleased = true;
+        private string species;
+        private double weight;
+        private int depth;
 
         private bool playerMade = false;
         private int saveID;
@@ -63,30 +64,42 @@ namespace DatabaseProjekt
         {
             GameWorld.Instance.connection.Open();
 
-           
+
             for (int i = 0; i < 3; i++)
             {
-               var cmd = new SQLiteCommand($"SELECT Id,Species, Depth, Weight FROM '{myType[(int)currentArea]}' WHERE Id={i}", GameWorld.Instance.connection);
-              var  dataread = cmd.ExecuteReader();
-               
+                var cmd = new SQLiteCommand($"SELECT Id,Species, Depth, Weight FROM '{myType[(int)currentArea]}' WHERE Id={i}", GameWorld.Instance.connection);
+                var dataread = cmd.ExecuteReader();
+
                 while (dataread.Read())
                 {
-                     species = dataread.GetString(1);
-                     depth = dataread.GetInt32(2);
-                     weight = dataread.GetDouble(3);
-                   
+                    species = dataread.GetString(1);
+                    depth = dataread.GetInt32(2);
+                    weight = dataread.GetDouble(3);
+
                 }
                 for (int x = 0; x < amount; x++)
                 {
-                    GameWorld.Instance.Instantiate(
-                    GameWorld.Instance.SpawnFish(currentArea, species, depth));
+                    GameWorld.Instance.Instantiate(SpawnFish(currentArea, species, depth));
                 }
             }
-            
+
 
             GameWorld.Instance.connection.Close();
         }
 
+        public GameObject SpawnFish(FishType type, string species, int depth)
+        {
+            GameObject fish = FishFactory.Instance.CreateObject();
+            Fish f = fish.GetComponent<Fish>() as Fish;
+            f.MyFishType = type;
+            f.GameObject.Tag = species;
+
+            f.GameObject.Transform.Position = new Vector2(rand.Next(150, 950), depth);
+
+
+
+            return fish;
+        }
 
         public void Start()
         {
@@ -206,14 +219,14 @@ namespace DatabaseProjekt
                 if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
                 {
                     currentArea = FishType.sea;
-                    
+
                 }
                 kStateOld = kState;
             }
 
             if (currentArea == FishType.sea)
             {
-
+               
                 if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
                 {
                     currentArea = FishType.fjord;
@@ -285,18 +298,18 @@ namespace DatabaseProjekt
         public void GetAttributes()
         {
             Open();
-            
+
             for (int i = 1; i < 4; i++)
             {
-                
+
                 var cmd = new SQLiteCommand($"SELECT Score FROM highscore WHERE Id={i}", GameWorld.Instance.connection);
                 var dataread = cmd.ExecuteReader();
 
                 while (dataread.Read())
                 {
-                   userHighscore[i-1]  = dataread.GetInt32(0);
+                    userHighscore[i - 1] = dataread.GetInt32(0);
                 }
-                
+
             }
             Close();
         }

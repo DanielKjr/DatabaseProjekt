@@ -21,7 +21,6 @@ namespace DatabaseProjekt
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private Random rand = new Random();
         public SQLiteConnection connection = new SQLiteConnection("Data Source=FishingFrenzy.db");
         private List<GameObject> gameObjects = new List<GameObject>();
         private List<GameObject> newGameObjects = new List<GameObject>();
@@ -65,7 +64,7 @@ namespace DatabaseProjekt
             _graphics.ApplyChanges();
 
 
-            Instantiate(SpawnFish(FishType.fjord, "Salmon", 500));
+          
 
 
             for (int i = 0; i < gameObjects.Count; i++)
@@ -76,19 +75,7 @@ namespace DatabaseProjekt
             base.Initialize();
         }
 
-        public GameObject SpawnFish(FishType type, string species, int depth)
-        {
-            GameObject fish = FishFactory.Instance.CreateObject();
-            Fish f = fish.GetComponent<Fish>() as Fish;
-            f.MyFishType = type;
-            f.GameObject.Tag = species;
-            
-            f.GameObject.Transform.Position =new Vector2(rand.Next(150,950), depth);
-
-
-
-            return fish;
-        }
+      
 
         public void CreateDb()
         {
