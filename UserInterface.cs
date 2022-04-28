@@ -11,8 +11,8 @@ namespace DatabaseProjekt
     public class UserInterface : IDatabaseImporter
     {
         private Random rand = new Random();
-        private FishType currentArea;
-        private Texture2D[] sprites = new Texture2D[3];
+        public FishType currentArea;
+        private Texture2D[] sprites = new Texture2D[4];
         private Texture2D[] areaSprites = new Texture2D[3];
         private Texture2D sprite;
         private SpriteFont saveSelectFont;
@@ -25,16 +25,20 @@ namespace DatabaseProjekt
         private string species;
         private double weight;
         private int depth;
-        private bool hasSpawned = false;
+        private int endScore;
 
         private bool playerMade = false;
         private int saveID;
         private int[] userHighscore = new int[4];
-        private bool scoreSet = false;
-
+        private bool endTimerBegin = false;
+        private float endTimer = 2;
         private bool riverSpawned = false;
         private bool seaSpawned = false;
         private bool fjordSpawned = false;
+        private float playingTimer;
+        private bool endBegin = false;
+        private int[] highscoreScore = new int[5];
+        private int[] highscoreUserId = new int[5];
         private string[] myType = new string[]
        {
             "riverfish",
@@ -112,8 +116,8 @@ namespace DatabaseProjekt
             sprites[0] = GameWorld.Instance.Content.Load<Texture2D>("saveSelect");
             sprites[1] = GameWorld.Instance.Content.Load<Texture2D>("titleScreenBackground");
             sprites[2] = GameWorld.Instance.Content.Load<Texture2D>("riverBackground");
-            //sprites[3] = GameWorld.Instance.Content.Load<Texture2D>("");
-            //sprites[4] = GameWorld.Instance.Content.Load<Texture2D>("");
+            sprites[3] = GameWorld.Instance.Content.Load<Texture2D>("fishingFrenzyEndState");
+
             areaSprites[0] = GameWorld.Instance.Content.Load<Texture2D>("riverBackground");
             areaSprites[1] = GameWorld.Instance.Content.Load<Texture2D>("seaBackGround");
             areaSprites[2] = GameWorld.Instance.Content.Load<Texture2D>("fjordBackground");
@@ -129,6 +133,7 @@ namespace DatabaseProjekt
         }
         public void Update(GameTime gameTime)
         {
+
             mState = Mouse.GetState();
             kState = Keyboard.GetState();
             switch (GameWorld.Instance.GameState)
@@ -146,7 +151,7 @@ namespace DatabaseProjekt
                     Playing();
                     break;
                 case GameState.End:
-
+                    End();
                     break;
             }
         }
@@ -191,14 +196,16 @@ namespace DatabaseProjekt
             if (mState.LeftButton == ButtonState.Pressed && mLeftReleased == true)
             {
                 mLeftReleased = false;
-                if (mState.Position.X < 375 && mState.Position.X > 64 && mState.Position.Y < 690 && mState.Position.Y > 630)
+                if (mState.Position.X < 375 && mState.Position.X > 5 && mState.Position.Y < 685 && mState.Position.Y > 630)
                 {
+                    playingTimer = 15;
                     GameWorld.Instance.GameState = GameState.Playing;
 
                 }
-                if (mState.Position.X < 200 && mState.Position.X > 10 && mState.Position.Y < 120 && mState.Position.Y > 50)
+                if (mState.Position.X < 200 && mState.Position.X > 10 && mState.Position.Y < 790 && mState.Position.Y > 700)
                 {
-                    GameWorld.Instance.GameState = GameState.Playing;
+                    endBegin = true;
+                    GameWorld.Instance.GameState = GameState.End;
                 }
 
 
@@ -215,6 +222,7 @@ namespace DatabaseProjekt
         }
         public void Playing()
         {
+
             sprite = sprites[2];
             sprites[2] = areaSprites[(int)currentArea];
 
@@ -277,11 +285,59 @@ namespace DatabaseProjekt
                 kStateOld = kState;
             }
 
+            playingTimer -= GameWorld.DeltaTime;
+
+            if (playingTimer <= 0)
+            {
+                endBegin = true;
+                GameWorld.Instance.GameState = GameState.End;
+            }
 
         }
         public void End()
         {
-            sprite = sprites[4];
+            sprite = sprites[3];
+            if (endBegin)
+            {
+                Player player = (Player)GameWorld.Instance.FindObjectOfType<Player>();
+                if (player != null)
+                {
+                    player.SaveHighScore(player.Score);
+                    endScore = player.Score;
+                    GameWorld.Instance.Destroy(player.GameObject);
+                    playerMade = false;
+                    GameWorld.Instance.CleanUpFish();
+                }
+
+                fjordSpawned = false;
+                riverSpawned = false;
+                seaSpawned = false;
+                endBegin = false;
+                List<highscore> highscores = ReadHighscores();
+                int i = 0;
+
+                foreach (highscore h in highscores)
+                {
+
+                    highscoreScore[i] = h.Score;
+                    highscoreUserId[i] = h.UserId;
+                    i++;
+
+                }
+                endTimerBegin = true;
+                endBegin = false;
+            }
+            if (endTimerBegin)
+            {
+                endTimer -= GameWorld.DeltaTime;
+                if (endTimer <= 0 && kState.IsKeyDown(Keys.Space) && kState != kStateOld)
+                {
+                    GameWorld.Instance.GameState = GameState.SaveSelect;
+                    kState = kStateOld;
+                    endTimer = 2;
+                }
+            }
+
         }
         public void Draw(SpriteBatch spriteBatch)
         {
@@ -301,6 +357,23 @@ namespace DatabaseProjekt
                     spriteBatch.DrawString(titleScreenFont, "HighScore", new Vector2(15, 700), Color.White);
                     break;
                 case GameState.Playing:
+                    spriteBatch.DrawString(saveSelectFont, $"{(int)playingTimer}", new Vector2(5, 10), Color.White);
+                    break;
+                case GameState.End:
+                    if (endTimer <= 0)
+                    {
+                        spriteBatch.DrawString(saveSelectFont, "Press space to \n" +
+                            "return to UserSelection", new Vector2(400, 20), Color.White);
+                    }
+                    spriteBatch.DrawString(titleScreenFont, $"score for this run: {endScore}", new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2 - 200, 650), Color.White);
+                    spriteBatch.DrawString(saveSelectFont, $"User:{highscoreUserId[0]} with {highscoreScore[0]} Points \n" +
+$"User:{highscoreUserId[1]} With {highscoreScore[1]} Points\n" +
+$"User:{highscoreUserId[2]} With {highscoreScore[2]} Points\n" +
+$"User:{highscoreUserId[3]} With {highscoreScore[3]} Points\n" +
+$"User:{highscoreUserId[4]} With {highscoreScore[4]} Points\n", new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2 - 300, 150), Color.White);
+
+
+
                     break;
             }
         }
@@ -332,7 +405,7 @@ namespace DatabaseProjekt
             for (int i = 1; i < 4; i++)
             {
 
-                var cmd = new SQLiteCommand($"SELECT Score FROM highscore WHERE Id={i}", GameWorld.Instance.connection);
+                var cmd = new SQLiteCommand($"SELECT Score FROM highscore WHERE UserId={i}", GameWorld.Instance.connection);
                 var dataread = cmd.ExecuteReader();
 
                 while (dataread.Read())
@@ -351,7 +424,6 @@ namespace DatabaseProjekt
                 GameObject player = PlayerFactory.Instance.CreateObject();
                 Player p = player.GetComponent<Player>() as Player;
                 p.UserID = saveID;
-                p.SaveHighScore(200);
 
                 GameWorld.Instance.Instantiate(player);
 
@@ -360,5 +432,38 @@ namespace DatabaseProjekt
 
 
         }
+
+
+        public List<highscore> ReadHighscores()
+        {
+            Open();
+
+            List<highscore> highscores = new List<highscore>();
+
+
+            var cmd = new SQLiteCommand($"SELECT * FROM highscore ORDER BY Score DESC LIMIT 5;", GameWorld.Instance.connection);
+            cmd.ExecuteNonQuery();
+            var dataread = cmd.ExecuteReader();
+            while (dataread.Read())
+            {
+
+                highscore highscore = new highscore();
+                highscore.id = dataread.GetInt32(0);
+                highscore.UserId = dataread.GetInt32(1);
+                highscore.Score = dataread.GetInt32(2);
+
+                highscores.Add(highscore);
+            }
+
+            Close();
+            return highscores;
+        }
+
+    }
+    public class highscore
+    {
+        public int id { get; set; }
+        public int UserId { get; set; }
+        public int Score { get; set; }
     }
 }
