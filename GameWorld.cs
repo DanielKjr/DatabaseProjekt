@@ -164,6 +164,17 @@ namespace DatabaseProjekt
         {
             destroyedGameObjects.Add(go);
         }
+        public void CleanUpFish()
+        {
+            foreach (GameObject gameObject in gameObjects)
+            {
+                Fish f = (Fish)gameObject.GetComponent<Fish>();
+                if (f != null)
+                {
+                    Destroy(gameObject);
+                }
+            }
+        }
 
         /// <summary>
         /// Adds new objects to gameObjects list, runs Awake and Start.

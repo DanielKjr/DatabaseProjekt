@@ -32,6 +32,9 @@ namespace DatabaseProjekt
         private int[] userHighscore = new int[4];
         private bool scoreSet = false;
 
+        private bool riverSpawned = false;
+        private bool seaSpawned = false;
+        private bool fjordSpawned = false;
         private string[] myType = new string[]
        {
             "riverfish",
@@ -63,33 +66,30 @@ namespace DatabaseProjekt
         }
         public void FishSpawner(FishType area, int amount)
         {
-            if (!hasSpawned)
+
+
+            GameWorld.Instance.connection.Open();
+
+
+            for (int i = 1; i < 4; i++)
             {
-                GameWorld.Instance.connection.Open();
+                var cmd = new SQLiteCommand($"SELECT Id,Species, Depth, Weight FROM '{myType[(int)currentArea]}' WHERE Id={i}", GameWorld.Instance.connection);
+                var dataread = cmd.ExecuteReader();
 
-
-                for (int i = 1; i < 4; i++)
+                while (dataread.Read())
                 {
-                    var cmd = new SQLiteCommand($"SELECT Id,Species, Depth, Weight FROM '{myType[(int)currentArea]}' WHERE Id={i}", GameWorld.Instance.connection);
-                    var dataread = cmd.ExecuteReader();
+                    species = dataread.GetString(1);
+                    depth = dataread.GetInt32(2);
+                    weight = dataread.GetDouble(3);
 
-                    while (dataread.Read())
-                    {
-                        species = dataread.GetString(1);
-                        depth = dataread.GetInt32(2);
-                        weight = dataread.GetDouble(3);
-
-                    }
-                    for (int x = 0; x < amount; x++)
-                    {
-                        GameWorld.Instance.Instantiate(SpawnFish(currentArea, species, depth));
-                    }
                 }
-
-
-                GameWorld.Instance.connection.Close();
-                hasSpawned = true;
+                for (int x = 0; x < amount; x++)
+                {
+                    GameWorld.Instance.Instantiate(SpawnFish(currentArea, species, depth));
+                }
             }
+
+            GameWorld.Instance.connection.Close();
 
         }
 
@@ -221,11 +221,18 @@ namespace DatabaseProjekt
             CreatePlayer();
             if (currentArea == FishType.river)
             {
-                FishSpawner(currentArea, 2);
+
+                if (!riverSpawned)
+                {
+                    FishSpawner(currentArea, 2);
+                    riverSpawned = true;
+                }
+
                 if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
                 {
+                    GameWorld.Instance.CleanUpFish();
                     currentArea = FishType.sea;
-
+                    riverSpawned = false;
                 }
                 kStateOld = kState;
             }
@@ -233,22 +240,39 @@ namespace DatabaseProjekt
             if (currentArea == FishType.sea)
             {
 
+                if (!seaSpawned)
+                {
+                    FishSpawner(currentArea, 2);
+                    seaSpawned = true;
+                }
                 if (kState.IsKeyDown(Keys.Left) && kState != kStateOld)
                 {
+                    GameWorld.Instance.CleanUpFish();
                     currentArea = FishType.fjord;
+                    seaSpawned = false;
                 }
                 if (kState.IsKeyDown(Keys.Right) && kState != kStateOld)
                 {
+                    GameWorld.Instance.CleanUpFish();
                     currentArea = FishType.river;
+                    seaSpawned = false;
                 }
                 kStateOld = kState;
             }
 
             if (currentArea == FishType.fjord)
             {
+
+                if (!fjordSpawned)
+                {
+                    FishSpawner(currentArea, 2);
+                    fjordSpawned = true;
+                }
                 if (kState.IsKeyDown(Keys.Right) && kState != kStateOld)
                 {
+                    GameWorld.Instance.CleanUpFish();
                     currentArea = FishType.sea;
+                    fjordSpawned = false;
                 }
                 kStateOld = kState;
             }
