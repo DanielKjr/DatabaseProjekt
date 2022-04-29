@@ -26,6 +26,7 @@ namespace DatabaseProjekt
         private double weight;
         private int depth;
         private int endScore;
+        private bool instructions = false;
 
         private bool playerMade = false;
         private int saveID;
@@ -158,7 +159,7 @@ namespace DatabaseProjekt
         public void SaveSelect()
         {
             sprite = sprites[0];
-
+            
             if (mState.LeftButton == ButtonState.Pressed && mLeftReleased == true)
             {
                 mLeftReleased = false;
@@ -181,7 +182,15 @@ namespace DatabaseProjekt
                 {
                     saveID = 4;
                     GameWorld.Instance.GameState = GameState.TitleScreen;
+                }
+                
+                if (mState.Position.X < 645 && mState.Position.X > 385 && mState.Position.Y < 705 && mState.Position.Y > 600)
+                {
 
+                    Open();
+                    var cmd = new SQLiteCommand($"DELETE FROM highscore", GameWorld.Instance.connection);
+                    cmd.ExecuteNonQuery();
+                    Close();
                 }
 
             }
@@ -225,7 +234,13 @@ namespace DatabaseProjekt
 
             sprite = sprites[2];
             sprites[2] = areaSprites[(int)currentArea];
-
+            if (instructions == false)
+            {
+                if (kState.IsKeyDown(Keys.Space) && kState != kStateOld)
+                {
+                    instructions = true;
+                }
+            }
             CreatePlayer();
             if (currentArea == FishType.river)
             {
@@ -347,10 +362,17 @@ namespace DatabaseProjekt
             {
                 case GameState.SaveSelect:
                     GetAttributes();
-                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[0]}", new Vector2(70, 300), Color.White);
-                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[1]}", new Vector2(670, 300), Color.White);
-                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[2]}", new Vector2(70, 425), Color.White);
-                    spriteBatch.DrawString(titleScreenFont, $"{userHighscore[3]}", new Vector2(670, 425), Color.White);
+                    spriteBatch.DrawString(saveSelectFont, "click this text to\n" +
+                        " delete current\n" +
+                        "   Highscores"
+                        , new Vector2(385, 600), Color.White);
+                    spriteBatch.DrawString(saveSelectFont, "Click the picture of\n" +
+                        $"your preffered profile\n" +
+                        $"to login and play", new Vector2(385, 0), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"last run: {userHighscore[0]}", new Vector2(70, 300), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"last run: {userHighscore[1]}", new Vector2(670, 300), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"last run: {userHighscore[2]}", new Vector2(70, 425), Color.White);
+                    spriteBatch.DrawString(titleScreenFont, $"last run: {userHighscore[3]}", new Vector2(670, 425), Color.White);
                     break;
                 case GameState.TitleScreen:
                     spriteBatch.DrawString(titleScreenFont, "Play", new Vector2(15, 630), Color.White);
@@ -358,6 +380,12 @@ namespace DatabaseProjekt
                     break;
                 case GameState.Playing:
                     spriteBatch.DrawString(saveSelectFont, $"{(int)playingTimer}", new Vector2(5, 10), Color.White);
+                    if (instructions == false)
+                    {
+                        spriteBatch.DrawString(saveSelectFont, "left and right arrow keys to change location\n" +
+                        "press and hold spacebar to charge your throw", new Vector2(50, 10), Color.White);
+                    }
+
                     break;
                 case GameState.End:
                     if (endTimer <= 0)
@@ -367,10 +395,10 @@ namespace DatabaseProjekt
                     }
                     spriteBatch.DrawString(titleScreenFont, $"score for this run: {endScore}", new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2 - 200, 650), Color.White);
                     spriteBatch.DrawString(saveSelectFont, $"User:{highscoreUserId[0]} with {highscoreScore[0]} Points \n" +
-$"User:{highscoreUserId[1]} With {highscoreScore[1]} Points\n" +
-$"User:{highscoreUserId[2]} With {highscoreScore[2]} Points\n" +
-$"User:{highscoreUserId[3]} With {highscoreScore[3]} Points\n" +
-$"User:{highscoreUserId[4]} With {highscoreScore[4]} Points\n", new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2 - 300, 150), Color.White);
+                                                $"User:{highscoreUserId[1]} With {highscoreScore[1]} Points\n" +
+                                                $"User:{highscoreUserId[2]} With {highscoreScore[2]} Points\n" +
+                                                $"User:{highscoreUserId[3]} With {highscoreScore[3]} Points\n" +
+                                                $"User:{highscoreUserId[4]} With {highscoreScore[4]} Points\n", new Vector2(GameWorld.Instance.Graphics.PreferredBackBufferWidth / 2 - 300, 150), Color.White);
 
 
 
