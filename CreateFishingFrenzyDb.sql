@@ -1,5 +1,5 @@
 --
--- File generated with SQLiteStudio v3.3.3 on Thu Apr 28 14:06:21 2022
+-- File generated with SQLiteStudio v3.3.3 on Fri Apr 29 09:15:32 2022
 --
 -- Text encoding used: System
 --
@@ -32,9 +32,9 @@ INSERT INTO river (Id, Species, Depth, Weight) VALUES (3, 'RainbowTrout', 200, 1
 
 -- Table: riverfish
 CREATE TABLE riverfish (Id integer primary key, Species string, Depth int, Weight REAL, Texture string);
-INSERT INTO riverfish (Id, Species, Depth, Weight, Texture) VALUES (1, 'NorthernPike', 300, 1.4, 'NorthernPike');
-INSERT INTO riverfish (Id, Species, Depth, Weight, Texture) VALUES (2, 'Eel', 200, 3.6, 'Eel');
-INSERT INTO riverfish (Id, Species, Depth, Weight, Texture) VALUES (3, 'RainbowTrout', 200, 12.0, 'RainbowTrout');
+INSERT INTO riverfish (Id, Species, Depth, Weight, Texture) VALUES (1, 'NorthernPike', 500, 1.4, 'NorthernPike');
+INSERT INTO riverfish (Id, Species, Depth, Weight, Texture) VALUES (2, 'Eel', 600, 3.6, 'Eel');
+INSERT INTO riverfish (Id, Species, Depth, Weight, Texture) VALUES (3, 'RainbowTrout', 400, 12.0, 'RainbowTrout');
 
 -- Table: rods
 CREATE TABLE rods (Id integer primary key, Type string);

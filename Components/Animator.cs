@@ -5,6 +5,7 @@ namespace DatabaseProjekt
 {
     public class Animator : Component
     {
+        //Animator and Animation is part of the template we have made so it is avaiable, not used in this project.
         public int CurrentIndex { get; private set; }
 
         private float elapsed;

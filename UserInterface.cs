@@ -159,7 +159,7 @@ namespace DatabaseProjekt
         public void SaveSelect()
         {
             sprite = sprites[0];
-            
+
             if (mState.LeftButton == ButtonState.Pressed && mLeftReleased == true)
             {
                 mLeftReleased = false;
@@ -183,7 +183,7 @@ namespace DatabaseProjekt
                     saveID = 4;
                     GameWorld.Instance.GameState = GameState.TitleScreen;
                 }
-                
+
                 if (mState.Position.X < 645 && mState.Position.X > 385 && mState.Position.Y < 705 && mState.Position.Y > 600)
                 {
 
@@ -191,6 +191,9 @@ namespace DatabaseProjekt
                     var cmd = new SQLiteCommand($"DELETE FROM highscore", GameWorld.Instance.connection);
                     cmd.ExecuteNonQuery();
                     Close();
+                    Array.Clear(userHighscore, 0, 4);
+                    Array.Clear(highscoreScore, 0, 4);
+                    Array.Clear(highscoreUserId, 0, 4);
                 }
 
             }
@@ -375,6 +378,7 @@ namespace DatabaseProjekt
                     spriteBatch.DrawString(titleScreenFont, $"last run: {userHighscore[3]}", new Vector2(670, 425), Color.White);
                     break;
                 case GameState.TitleScreen:
+
                     spriteBatch.DrawString(titleScreenFont, "Play", new Vector2(15, 630), Color.White);
                     spriteBatch.DrawString(titleScreenFont, "HighScore", new Vector2(15, 700), Color.White);
                     break;
@@ -390,6 +394,7 @@ namespace DatabaseProjekt
                 case GameState.End:
                     if (endTimer <= 0)
                     {
+
                         spriteBatch.DrawString(saveSelectFont, "Press space to \n" +
                             "return to UserSelection", new Vector2(400, 20), Color.White);
                     }
